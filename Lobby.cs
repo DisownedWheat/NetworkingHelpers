@@ -14,7 +14,7 @@ public class Lobby : Node
     [Signal]
     public delegate void ServerGaveID(int ID);
     [Signal]
-    public delegate void PlayerCountChanged(GenericObjectWrapper<PlayerDict> players);
+    public delegate void PlayerCountChanged(ObjectWrapper<PlayerDict> players);
     [Signal]
     public delegate void ConnectedToServer();
     [Signal]
@@ -30,7 +30,7 @@ public class Lobby : Node
     {
         AddPlayerToLobby(ID);
         Rpc(nameof(ClientReceivePlayerInfo), JsonConvert.SerializeObject(Players));
-        EmitSignal(nameof(PlayerCountChanged), new GenericObjectWrapper<PlayerDict>(Players));
+        EmitSignal(nameof(PlayerCountChanged), new ObjectWrapper<PlayerDict>(Players));
     }
 
     public void ServerOnPlayerDisconnected(int ID)
@@ -82,7 +82,7 @@ public class Lobby : Node
     public void UpdatePlayersLocally(PlayerDict players)
     {
         Players = players;
-        EmitSignal(nameof(PlayerCountChanged), new GenericObjectWrapper<PlayerDict>(players));
+        EmitSignal(nameof(PlayerCountChanged), new ObjectWrapper<PlayerDict>(players));
     }
 
     [PuppetSync]
@@ -95,14 +95,14 @@ public class Lobby : Node
     private void AddPlayerToLobby(int ID)
     {
         Players[ID] = "";
-        EmitSignal(nameof(PlayerCountChanged), Players);
+        EmitSignal(nameof(PlayerCountChanged), new ObjectWrapper<PlayerDict>(Players));
     }
 
     [RemoteSync]
     public void RemovePlayerFromLobby(int ID)
     {
         Players.Remove(ID);
-        EmitSignal(nameof(PlayerCountChanged), new GenericObjectWrapper<PlayerDict>(Players));
+        EmitSignal(nameof(PlayerCountChanged), new ObjectWrapper<PlayerDict>(Players));
     }
 
     [Master]
@@ -113,7 +113,7 @@ public class Lobby : Node
             Players[ID] = name;
         }
 
-        var obj = new GenericObjectWrapper<PlayerDict>(Players);
+        var obj = new ObjectWrapper<PlayerDict>(Players);
         EmitSignal(nameof(PlayerCountChanged), obj);
         Rpc(nameof(ClientReceivePlayerInfo), JsonConvert.SerializeObject(Players));
     }

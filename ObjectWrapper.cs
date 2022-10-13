@@ -1,22 +1,17 @@
 using Godot;
 using System;
 
-public class ObjectWrapper : Godot.Object
+public class ObjectWrapper<T> : Godot.Object
 {
-    private object Value;
+    private T Value;
 
-    public ObjectWrapper(object v)
+    public ObjectWrapper(T v)
     {
         Value = v;
     }
 
-    public T GetValue<T>()
+    public T GetValue()
     {
-        return (T)Value;
-    }
-
-    public Type GetValueType()
-    {
-        return Value.GetType();
+        return Value;
     }
 }
